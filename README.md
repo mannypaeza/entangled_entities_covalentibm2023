@@ -1,2 +1,4 @@
-### Entangled Entities Covalent IBM 2023 MIT IQuHACK
+## MIT IQuHACK 2023 Entangled Entitites Project
+
+#### Project for Covalent x IbM Challenge
 
