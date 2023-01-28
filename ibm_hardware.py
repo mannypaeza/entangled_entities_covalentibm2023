@@ -3,6 +3,7 @@ from qiskit import *
 from qiskit import IBMQ
 from qiskit.compiler import assemble, transpile
 from qiskit.providers.fake_provider import FakeNairobiV2
+from qiskit.providers.ibmq.managed import IBMQJobManager
 
 """ 
 Get account/backend (REAL)
@@ -22,7 +23,12 @@ backend = FakeNairobiV2
 Retrieving Job
 """
 
-#Retriving the Job
-job = backend.run()
-result = job.result()
+#Jobs
+circs = transpile([circuit], backend=backend)
 
+job_manager = IBMQJobManager()
+job_set = job_manager.run(circs, backend=backend, name='entangled-entities')
+
+job_set_id = job_set.job_set_id()
+retrieved_job_set = job_manager.retrieve_job_set(job_set_id=job_set_id, provider=provider)
+print(retrieved_job_set.report())
