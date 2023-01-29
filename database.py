@@ -11,6 +11,9 @@ from qiskit.visualization import *
 from qiskit_ibm_runtime.program import UserMessenger
 from scipy.optimize import dual_annealing
 import statistics
+from qiskit.compiler import transpile
+from qiskit.quantum_info import SparsePauliOp
+from qiskit_ibm_runtime import Estimator, QiskitRuntimeService, Session
 
 @ct.electron
 def fetch_data(id):
@@ -31,12 +34,27 @@ def fetch_data(id):
 	return scores
 
 @ct.electron
-def predict_trouble(example, parameters = [0.8683269 , 0.39393166, 0.47681407, 0.30033276, 0.97830805, 0.52097628, 0.99194506, 0.92128744, 0.57695905, 0.36047569,0.83097868, 0.47035325]):
+@ct.lattice
+def predict_trouble(token, example, parameters = [0.8683269 , 0.39393166, 0.47681407, 0.30033276, 0.97830805, 0.52097628, 0.99194506, 0.92128744, 0.57695905, 0.36047569,0.83097868, 0.47035325]):
     qc = QuantumCircuit(3)
     embed_example(qc, example)
     apply_parameters(qc, parameters)
+    evaluate_circuit(qc, token)
     result = run_circuit(qc, Aer.get_backend("aer_simulator"))
     return make_prediction(result)
+
+@ct.electron(deps_pip=ct.DepsPip(["qiskit==0.40.0"]))
+def evaluate_circuit(qc, token: str):
+    QiskitRuntimeService.save_account(channel="ibm_quantum",
+                                      token=token,
+                                      instance="ibm-q-community/mit-hackathon/main",
+                                      overwrite=True)
+
+    with Session(service=QiskitRuntimeService(), backend="ibm_nairobi"):
+        estimator = Estimator()
+        return estimator.run(circuits=qc,
+                             observables=[SparsePauliOp("IZ")],
+                             shots=500).result()
 
 
 def embed_example(circuit, example):
