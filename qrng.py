@@ -1,9 +1,9 @@
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit, execute,IBMQ
 from qiskit.tools.monitor import job_monitor
 
-def qrng(n:int, api_token, provider='ibm-q'):
+def qrng(n:int, api_token):
   IBMQ.enable_account(api_token)
-  provider = IBMQ.get_provider(hub=provider)
+  provider = IBMQ.get_provider(hub='ibm-q-community', group='mit-hackathon', project='main')
   
   q = QuantumRegister(16,'q')
   c = ClassicalRegister(16,'c')
