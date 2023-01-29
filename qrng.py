@@ -1,5 +1,7 @@
-from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit, execute,IBMQ
+from qiskit import (IBMQ, ClassicalRegister, QuantumCircuit, QuantumRegister,
+                    execute)
 from qiskit.tools.monitor import job_monitor
+
 
 def qrng(n:int, api_token):
   IBMQ.enable_account(api_token)
